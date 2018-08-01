@@ -1,0 +1,27 @@
+<div class="container" style="margin-top:15%;">
+	<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+			<div class="panel-heading"><b>Admin Login</b></div>
+				<div class="panel-body">		
+				  <div class="form-group">
+					<div class="input-group">
+					<div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+					<input type="text" class="form-control" ng-model="username" placeholder="Username" required />
+					</div>
+				  </div>
+				  <div class="form-group">
+				  <div class="input-group">
+					<div class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></div>
+					<input type="password" class="form-control" ng-model="password" placeholder="Password" required />
+				 </div>
+				</div>
+				  <button type="submit" name="stdsubmit" class="btn btn-primary btn-block" style="background-color:#004e96;" ng-click="formSubmit()"><span class="glyphicon glyphicon-log-in"></span>  Submit  </button>
+				  <span class="text-danger" style="color:red">{{ error }}</span>
+				</div>
+			</div>	
+		</div>
+		<div class="col-md-4"></div>
+	</div>
+</div>
