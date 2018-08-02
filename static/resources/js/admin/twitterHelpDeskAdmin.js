@@ -24,8 +24,6 @@ var app = angular.module('twitterHelpDeskAdminApp', ['ui.router']);
 		params.pass = $scope.password;
 		$http.post('http://localhost:8080/api/authenticateAdmin', params).then(
 			   function(response){
-				 // success callback
-				 debugger;
 				 if(response.data[0]["count"]>0){
 					$rootScope.userName = $scope.username;
 					$scope.error = '';
@@ -44,7 +42,23 @@ var app = angular.module('twitterHelpDeskAdminApp', ['ui.router']);
     };    
   });
  app.controller('HomeController', 
-  function($scope, $rootScope, $stateParams, $state) {
-    $scope.user = $rootScope.userName;
-    
+  function($scope, $rootScope, $stateParams, $state, $http) {
+    debugger;
+	$scope.user = $rootScope.userName;
+    $scope.getUsersList = function(){
+		var params = {};
+		$http.post('http://localhost:8080/api/getUsersList', params).then(
+			   function(response){
+				 debugger;
+				 $scope.listOfUsers = response.data;
+			   }, 
+			   function(error){
+				 console.log(error);
+			   }
+			); 
+	};
+	$scope.getChatHistory = function(user){
+		debugger;
+		$scope.currentSelectedUser = user.user_name;
+	}
   });

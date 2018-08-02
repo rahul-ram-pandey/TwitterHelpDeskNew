@@ -1,5 +1,32 @@
-<div class="col-md-12" style="width:500px;">
-    <div align="right"><a ui-sref="login">Logout</a></div>
-      <h4>Welcome {{user}}! </h4>
-      <p><strong>This is User Home Page</strong></p>    
-</div>	
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+      <div class="navbar-header">
+           <span class="navbar-brand" style="color:#ffffff; font-size:x-large;">Rich Panel</span>
+       </div>
+      <ul class="nav navbar-nav" ng-init="showMenu='Dashboard'">
+	    <li ng-class="{'active' : showMenu=='Dashboard'}" ng-click="showMenu='Dashboard'"><a>Dashboard</a></li>
+        <li ng-class="{'active' : showMenu=='Profile'}" ng-click="showMenu='Profile'"><a>Profile</a></li>
+        <li ng-class="{'active' : showMenu=='Chat'}" ng-click="showMenu='Chat'"><a>Chat</a></li>
+        <li ng-class="{'active' : showMenu=='Settings'}" ng-click="showMenu='Settings'"><a>Settings</a></li> 
+      </ul>
+	  
+    <ul class="nav navbar-nav navbar-right">
+      <li><a ui-sref="login"><span class="glyphicon glyphicon-user"></span> Logout</a></li>	  
+    </ul>
+<p class="navbar-text navbar-right">Signed in as {{user}} </p>
+  </div>
+</nav>
+
+
+<div ng-show="showMenu=='Dashboard'">
+	Dashboard Coming Soon
+</div>
+<div ng-show="showMenu=='Profile'">
+	Profile Coming Soon
+</div>
+<div ng-show="showMenu=='Chat'">
+	Chat
+</div>
+<div ng-show="showMenu=='Settings'">
+	Settings
+</div>
