@@ -41,7 +41,7 @@ router.post('/api/authenticateUser', function(req, res, next){
         console.error(err);
         return res.send(err);
      } else {
-	    console.log(result); 
+	   // console.log(result); 
         return res.json(result);
      }
 	});
@@ -60,6 +60,23 @@ router.post('/api/registerUser', function(req, res, next){
      }
 	});
 });
+
+router.post('/api/getUsersList', function(req, res, next){
+	var data = req.body;
+	var sql = 'select distinct user_name from user';
+	var query = connection.query(sql, function(err, result){
+		if (err) {
+        console.error(err);
+        return res.send(err);
+     } else {
+	    console.log(result); 
+        return res.send(result);
+     }
+	});
+});
+
 app.use("/", router);
 
-app.listen(8080);
+app.listen(8080,function(){
+	console.log("Started server on port 8080");
+});
