@@ -51,10 +51,44 @@ var app = angular.module('twitterHelpDeskUserApp', ['ui.router']);
 		$state.transitionTo('register');
 	}
   });
-app.controller('HomeController', function($scope, $rootScope, $stateParams, $state) {
-    $scope.user = $rootScope.userName;
-    
-});
+ app.controller('HomeController', function($scope, $rootScope, $stateParams, $state, $http) {
+    debugger;
+	$scope.user = $rootScope.userName;
+	var metaData = {
+		isUser : true,
+		uName  : $scope.user
+	};
+	var socket = io.connect('http://localhost:8080',{query:metaData});
+	$scope.getChatHistory = function(){
+		var params = {};
+		params.userName = $scope.user;
+		$http.post('http://localhost:8080/api/getUserChatHistory', params).then(
+		   function(response){
+			 $scope.chatRecordForParticularUser = response.data;
+			 console.log(response.data);
+		   }, 
+		   function(error){
+			 console.log(error);
+		   }
+		); 
+	}
+	$scope.sendDataToServer = function(){
+		debugger;
+		socket.emit('chat', {
+			isUser     : true,
+			uName      : $scope.user,
+			message    : $scope.textMessage,
+			adminName  : "admin"
+		});
+		$scope.textMessage = "";
+	}
+	socket.on('message',function(data){
+		if($scope.user == data.userName){
+			$scope.chatRecordForParticularUser = data.result;
+			$scope.$apply();
+		}
+	});
+  });
 app.controller('RegisterController', function($scope, $stateParams, $state, $http){
 	$scope.reset = function(){
 		$scope.userName = $scope.password = $scope.confirmPassword = $scope.email = $scope.contactNo = $scope.address = $scope.city = $scope.pincode = null;
@@ -112,9 +146,6 @@ app.controller('RegisterController', function($scope, $stateParams, $state, $htt
 		}else{
 			$scope.error = null;
 		}
-		
-		
-		
 		if(isValid){
 			debugger;	
 			$scope.isProcessing = true;

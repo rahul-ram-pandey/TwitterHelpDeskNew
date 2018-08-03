@@ -4,9 +4,15 @@ var cors = require('cors');
 var socket = require('socket.io');
 var app = express();
 var bodyParser = require('body-parser');
-app.use(cors());
-
 var router = express.Router();
+
+app.use(cors());
+app.use("/", router);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
 var connection = mysql.createConnection({
      host: 'localhost',
      user: 'root',
@@ -14,8 +20,6 @@ var connection = mysql.createConnection({
      database: 'richpanel'
 });
 connection.connect();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 router.post('/api/authenticateAdmin', function(req, res, next){
 	console.log(req.body);
    var userName = req.body.userName;
@@ -66,7 +70,7 @@ router.post('/api/getUsersList', function(req, res, next){
 	var data = req.body;
 	var sql = 'select distinct user_name from user';
 	var query = connection.query(sql, function(err, result){
-		if (err) {
+	if (err) {
         console.error(err);
         return res.send(err);
      } else {
@@ -78,7 +82,7 @@ router.post('/api/getUsersList', function(req, res, next){
 
 router.post('/api/getUserChatHistory', function(req, res, next){
 	var userName = req.body.userName;
-	var sql = 'select message, DATE_FORMAT(chat_date, "%d %M") as chat_date, TIME_FORMAT(chat_time, "%h %i %p") as chat_time, from_user from chat where user_name = ? and chat_date BETWEEN (CURDATE() - INTERVAL 30 DAY) AND CURDATE() order by chat_id';
+	var sql = 'select message, DATE_FORMAT(chat_date, "%d %M") as chat_date, TIME_FORMAT(chat_time, "%h %i %p") as chat_time, from_user from chat where user_name = ? and chat_date BETWEEN (CURDATE() - INTERVAL 30 DAY) AND CURDATE() order by chat_sequence_no';
 	var query = connection.query(sql,[userName], function(err, result){
 	if (err) {
         console.error(err);
@@ -89,13 +93,9 @@ router.post('/api/getUserChatHistory', function(req, res, next){
      }
 	});
 });
-
-app.use("/", router);
-
-var server=app.listen(8080,function(){
+var server = app.listen(8080,function(){
 	console.log("Started server on port 8080");
 });
-
 var io = socket(server);
 var clientSocketIds = {};
 var adminSocketIds = {};
@@ -103,28 +103,27 @@ var adminSocketIds = {};
 io.on('connection', function(socket){
 	var isUser = socket.handshake.query.isUser;
 	var userName = socket.handshake.query.uName;
-	console.log("inside connection "+ isUser + "===="+userName);
+	
 	if(isUser){
 		clientSocketIds.userName = socket.id;
 	}else{
 		adminSocketIds.userName = socket.id;
 	}
+	
 	socket.on('chat', function(data){
-		console.log("inside chat");
 		var user_name = data.uName;
 		var admin_user_name = data.adminName;
 		var message = data.message;
 		var from_user = data.isUser;
-	
-		var insertSQL = "insert into chat (user_name, admin_user_name, chat_date, chat_time, message, from_user) VALUES(?,?,curdate(),curtime(),?,?)";
 		
-		var query = connection.query(insertSQL,[user_name,admin_user_name,message,from_user], function(err, result){
+		var insertSQL = "insert into chat (user_name, admin_user_name, chat_date, chat_time, message, chat_sequence_no, from_user`) VALUES(?,?,curdate(),curtime(),?,select (ifnull(max(chat_sequence_no),0) + 1) from chat where user_name=?,?)";
+		
+		var query = connection.query(insertSQL,[user_name,admin_user_name,message,user_name,from_user], function(err, result){
 			if (err) {
-				console.log('inside error');
 				console.error(err);
 				return res.send(err);
 			 } else {
-				var sql = 'select message, DATE_FORMAT(chat_date, "%d %M") as chat_date, TIME_FORMAT(chat_time, "%h %i %p") as chat_time, from_user from chat where user_name = ? and chat_date BETWEEN (CURDATE() - INTERVAL 30 DAY) AND CURDATE() order by chat_id';
+				var sql = 'select message, DATE_FORMAT(chat_date, "%d %M") as chat_date, TIME_FORMAT(chat_time, "%h %i %p") as chat_time, from_user from chat where user_name = ? and chat_date BETWEEN (CURDATE() - INTERVAL 30 DAY) AND CURDATE() order by chat_sequence_no';
 				var query = connection.query(sql,[user_name], function(err, result){
 				if (err) {
 					console.error(err);

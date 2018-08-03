@@ -1,0 +1,21 @@
+select message, chat_date, chat_time, from_user from chat where user_name='asdasd' and chat_date BETWEEN (CURDATE() - INTERVAL 30 DAY) AND CURDATE() order by chat_sequence_no
+
+
+SELECT DATE_FORMAT(chat_date, "%d %M")
+
+
+INSERT INTO `chat`(`user_name`, `admin_user_name`, `chat_date`, `chat_time`, `message`, `chat_sequence_no`, `from_user`) VALUES ('rahul','root',curdate(),curtime(),'hello rahul','2',false)
+
+INSERT INTO `chat`(`user_name`, `admin_user_name`, `chat_date`, `chat_time`, `message`, `chat_sequence_no`, `from_user`) VALUES ('rahul','root',curdate(),curtime(),'how are you?','3',false)
+INSERT INTO `chat`(`user_name`, `admin_user_name`, `chat_date`, `chat_time`, `message`, `chat_sequence_no`, `from_user`) VALUES ('rahul','root',curdate(),curtime(),'I am fine','4',true)
+
+
+INSERT INTO `chat`(`user_name`, `admin_user_name`, `chat_date`, `chat_time`, `message`, `chat_sequence_no`, `from_user`) VALUES ('rahul123','root',curdate(),curtime(),'i am rahul123','7',true)
+INSERT INTO `chat`(`user_name`, `admin_user_name`, `chat_date`, `chat_time`, `message`, `chat_sequence_no`, `from_user`) VALUES ('rahul123','root',curdate(),curtime(),'hi rahul123, how are you?','8',false)
+
+
+select max(chat_sequence_no) from chat where user_name='rahul'
+
+
+
+INSERT INTO `chat`(`user_name`, `admin_user_name`, `chat_date`, `chat_time`, `message`, `chat_sequence_no`, `from_user`) VALUES ('rahul','root',curdate(),curtime(),'hello rahul'select (ifnull(max(chat_sequence_no),0) + 1) from chat where user_name='rahul' ,false)	

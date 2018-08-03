@@ -45,6 +45,11 @@ var app = angular.module('twitterHelpDeskAdminApp', ['ui.router']);
   function($scope, $rootScope, $stateParams, $state, $http) {
     debugger;
 	$scope.user = $rootScope.userName;
+	var metaData = {
+		isUser : false,
+		uName  : $scope.user
+	};
+	var socket = io.connect('http://localhost:8080',{query:metaData});
     $scope.getUsersList = function(){
 		var params = {};
 		$http.post('http://localhost:8080/api/getUsersList', params).then(
@@ -60,5 +65,33 @@ var app = angular.module('twitterHelpDeskAdminApp', ['ui.router']);
 	$scope.getChatHistory = function(user){
 		debugger;
 		$scope.currentSelectedUser = user.user_name;
+		var params = {};
+		params.userName = $scope.currentSelectedUser;
+		$http.post('http://localhost:8080/api/getUserChatHistory', params).then(
+		   function(response){
+			 debugger;
+			 $scope.chatRecordForParticularUser = response.data;
+			 console.log(response.data);
+		   }, 
+		   function(error){
+			 console.log(error);
+		   }
+		); 
 	}
+	$scope.sendDataToServer = function(){
+		debugger;
+		socket.emit('chat', {
+			isUser     : false,
+			uName      : $scope.currentSelectedUser,
+			message    : $scope.textMessage,
+			adminName  : $scope.user
+		});
+		$scope.textMessage = "";
+	}
+	socket.on('message',function(data){
+		if($scope.currentSelectedUser == data.userName){
+			$scope.chatRecordForParticularUser = data.result;
+			$scope.$apply();
+		}
+	});
   });
